@@ -1,13 +1,13 @@
-/*
+﻿/*
  * Tp1.cpp
  *
  * Created: 28/03/2025 18:59:25
- * Author : Villagra Santiago
+ * Author : santi
  */
 
 /* Inclusi�n de bibliotecas de c�digo */
 #include <avr/io.h>		 // Registros del microcontrolador
-#define F_CPU 16000000UL // Defino la frecuencia de oscilador en 16MHz
+#define F_CPU 16000000UL // Defino la frecuencia de oscilador en 8MHz
 #include <util/delay.h>	 // Retardos por software
 
 /*Funciones de secuencias de leds*/
@@ -53,7 +53,6 @@ int main(void)
 
 	int cont=0;
 	DDRC=0x00;
-	DDRB=0xff;
 	PORTC |= (1<<PORTC0) | (1<<PORTC1);
 	while (1)
 	{
@@ -63,21 +62,7 @@ int main(void)
 		else if (cont>=3){
 			cont=0;
 		}
-		if ((PINC & (1<<PINC1))==0){
-			switch(cont){
-				case 0:
-					PORTB=0b00001000;
-					break;
-				case 1:
-					PORTB=0b00010000;
-					break;
-				case 2:
-					PORTB=0b00011000;
-					break;
-			}
-		}
-		else
-			PORTB=0x00;
+		//_delay_ms(100);
 		switch(cont){
 			case 0:
 				Sec1();
