@@ -9,7 +9,6 @@
 static char contras[25][5]={"Arbol", "Boton", "CDyMC", "ClavE", "Facil", "Gafas", "Hojas", "LiBro", "Lanza", "Nieve", "PeRro", "PecES", "PiAno", "PrYKe", "RUEDa",
 "SERIE", "SalUd", "Salud", "Silla", "Tecla", "Valor", "Verde", "YnHRz", "hARdD", "silla"};
 
-//srand(time(NULL));
 char * getContra(void){
 	int num = rand()%25;
 	return contras[num];

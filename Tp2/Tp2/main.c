@@ -9,7 +9,7 @@
 #include "main.h"
 
 //Estados MEF
-/*typedef enum{S0,S1,S2, S3}state;
+typedef enum{S0,S1,S2, S3}state;
 state estado;
 void inicio(void);
 void escribiendo(void);
@@ -23,18 +23,38 @@ void Iniciar_MEF(){
 void ActualizarMEF(void) {
 	//X=leerEntradas();
 	(*MEF[estado])();
-}*/
+	switch(estado){
+		case S0:
+			if(X==1){
+				estado=S1;
+			}
+			break;
+		case S1:
+			if(X==1)
+				estado=S3;
+			break;
+		case S2:
+			estado=S0;
+			break;
+		case S3:
+			estado=S0;
+			break;
+		
+	}
+}
 char * contra;
 
 void inicio(void){
+	srand(TCNT0);
 	uint8_t car=0;
-	int ingreso=0;
-	while(!ingreso){
+	int ingreso=1;
+	contra=getContra();
+	while(ingreso){
 		if((KEYPAD_Scan(&car)==1)&&(car==42)){
 			LCDstring((uint8_t *)contra, 5);
 			_delay_ms(2000);
 			LCDclr();
-			ingreso=1;
+			ingreso=0;
 		}
 	}
 }
@@ -65,19 +85,20 @@ void escribiendo(void){
 
 int main(void)
 {
-	LCDinit();
-	char * contra=getContra();
+	LCD_Init();
 	inicio();
-
+	char* prueba="YA TERMINO EL INICIO";
+	LCDstring((uint8_t *)prueba, 21);
     while (1) 
     {
 		//inicio(contra);
-		escribiendo();
+		//escribiendo();
 		/*if (INTERERUPCION)
 		{
 			ActualizarMEF();
 		}
 		*/
+		
     }
 	return 0;
 }
