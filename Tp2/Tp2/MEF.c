@@ -16,6 +16,7 @@ S3 = PERDISTE
 	
 int ENTRADA=0;
 char * contra;
+
 void inicio(void){
 	srand(TCNT0);
 	uint8_t car=0;
@@ -82,7 +83,7 @@ void victoria(void){
 	_delay_ms(3000);
 }
 
-void (*Funciones[])(void)={inicio,escribiendo};
+void (*Funciones[])(void)={inicio,escribiendo,victoria,derrota};
 
 void ActualizarMEF(state* estado) {
 	(*Funciones[*estado])();

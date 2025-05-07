@@ -20,5 +20,6 @@
 #include "diccionario.h"
 #include <avr/interrupt.h>
 #include "MEF.h"
+#include "timer.h"
 
 #endif /* MAIN_H_ */

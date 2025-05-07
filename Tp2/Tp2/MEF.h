@@ -13,6 +13,8 @@
 typedef enum{S0,S1,S2,S3}state;
 void inicio(void);
 void escribiendo(void);
+void derrota(void);
+void victoria(void);
 
 void ActualizarMEF(state* estado);
 
