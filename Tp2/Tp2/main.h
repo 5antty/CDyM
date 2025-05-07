@@ -19,5 +19,6 @@
 #include <util/delay.h>
 #include "diccionario.h"
 #include <avr/interrupt.h>
+#include "MEF.h"
 
 #endif /* MAIN_H_ */

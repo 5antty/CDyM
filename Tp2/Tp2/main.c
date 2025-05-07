@@ -8,98 +8,39 @@
 #include <avr/io.h>
 #include "main.h"
 
-//Estados MEF
-typedef enum{S0,S1,S2, S3}state;
-state estado;
-void inicio(void);
-void escribiendo(void);
-void (*MEF[])(void)={inicio,escribiendo};
+static volatile uint8_t MEF_flag=0;
+static volatile uint8_t cont_MEF=0;
 
-int X;
-void Iniciar_MEF(){
-	estado=S0; X=0;
+void cargaRegsTimer(void){
+	//Utilizamos prescaler de 64
+	//MODO CTC WGM02=0 WGM01=1 WGM00=0
+	//Prescaler 64
+	TCCR0A|=0b00000010;
+	TCCR0B|=0x03;
+	OCR0A=249;
+	TIMSK0=(1<<OCIE0A);
+	sei();
 }
-
-void ActualizarMEF(void) {
-	//X=leerEntradas();
-	(*MEF[estado])();
-	switch(estado){
-		case S0:
-			if(X==1){
-				estado=S1;
-			}
-			break;
-		case S1:
-			if(X==1)
-				estado=S3;
-			break;
-		case S2:
-			estado=S0;
-			break;
-		case S3:
-			estado=S0;
-			break;
-		
-	}
-}
-char * contra;
-
-void inicio(void){
-	srand(TCNT0);
-	uint8_t car=0;
-	int ingreso=1;
-	contra=getContra();
-	while(ingreso){
-		if((KEYPAD_Scan(&car)==1)&&(car==42)){
-			LCDstring((uint8_t *)contra, 5);
-			_delay_ms(2000);
-			LCDclr();
-			ingreso=0;
-		}
-	}
-}
-
-void escribiendo(void){
-	int cant=0;
-	static int errores=0;
-	static int pulsadas=0;
-	uint8_t teclas[3];
-	char car;
-	while(cant<3)
-	{
-		if(KEYPAD_Scan(&teclas[cant])==1)
-			cant++;
-	}
-	if(teclas[2]==64){
-		car=teclas[0]*10+teclas[1];
-		if(car!=contra[pulsadas]){
-			errores++;
-		}
-		else
-			LCDGotoXY(0,pulsadas);
-			LCDsendChar(car);
-		pulsadas++;
-	}
-}
-
 
 int main(void)
 {
+	state estado=S0;
 	LCD_Init();
-	inicio();
-	char* prueba="YA TERMINO EL INICIO";
-	LCDstring((uint8_t *)prueba, 21);
+	cargaRegsTimer();
     while (1) 
     {
-		//inicio(contra);
-		//escribiendo();
-		/*if (INTERERUPCION)
+		if (MEF_flag)
 		{
-			ActualizarMEF();
+			ActualizarMEF(&estado);
 		}
-		*/
-		
     }
 	return 0;
+}
+
+ISR(TIMER0_COMPA_vect){
+	if (++cont_MEF==100) {
+		MEF_flag=1;
+		cont_MEF=0;
+	}
 }
 
