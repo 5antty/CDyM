@@ -13,11 +13,16 @@ S1 = ESCRIBIENDO
 S2 = GANASTE
 S3 = PERDISTE
 */
-	
+
 int ENTRADA=0;
 char * contra;
+static uint8_t clk=0;
+static int clkS0=0;
+static int clkVic=0;
+static int clkDer=0;
 
 void inicio(void){
+	cargaRegsTimer();
 	srand(TCNT0);
 	uint8_t car=0;
 	int ingreso=1;
@@ -25,8 +30,7 @@ void inicio(void){
 	while(ingreso){
 		if((KEYPAD_Scan(&car)==1)&&(car==42)){
 			LCDstring((uint8_t *)contra, 5);
-			_delay_ms(2000);
-			LCDclr();
+			//_delay_ms(2000);
 			ingreso=0;
 		}
 	}
@@ -78,32 +82,43 @@ void derrota(void){
 }
 
 void victoria(void){
-	LCDclr();
-	LCDstring((uint8_t *)"DERROTA", 7);
-	_delay_ms(3000);
+	LCDstring((uint8_t *)"VICTORIA ", 9);
 }
 
 void (*Funciones[])(void)={inicio,escribiendo,victoria,derrota};
 
 void ActualizarMEF(state* estado) {
+
 	(*Funciones[*estado])();
 	switch(*estado){
 		case S0:
-			*estado=S1;
+			clk=0;
+			if(++clkS0==2000){
+				LCDclr();
+				clkS0=0;
+				*estado=S1;
+			}
 		break;
 		case S1:
-		if(ENTRADA==1){
-			*estado=S3;
-		}
-		else if(ENTRADA==2){
-			*estado=S2;
-		}
+			if(ENTRADA==1){
+				*estado=S3;
+			}
+			else if(ENTRADA==2){
+				*estado=S2;
+			}
+			clk++;
 		break;
 		case S2:
 			*estado=S0;
+			clk++;
 		break;
 		case S3:
-			*estado=S0;
+			if(++clkVic==5000){
+				LCDclr();
+				clkVic=0;
+				*estado=S0;
+			}
+			LCDstring(())
 		break;
 		
 	}

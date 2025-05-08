@@ -14,12 +14,13 @@ int main(void)
 {
 	state estado=S0;
 	LCD_Init();
-	cargaRegsTimer();
+	//cargaRegsTimer();
     while (1) 
     {
 		if (MEF_flag)
 		{
 			ActualizarMEF(&estado);
+			MEF_flag=0;
 		}
     }
 	return 0;
