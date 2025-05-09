@@ -12,14 +12,14 @@ volatile uint8_t MEF_flag=0;
 
 int main(void)
 {
-	state estado=S0;
+	
 	LCD_Init();
-	//cargaRegsTimer();
+	IniciarMEF();
     while (1) 
     {
 		if (MEF_flag)
 		{
-			ActualizarMEF(&estado);
+			ActualizarMEF();
 			MEF_flag=0;
 		}
     }

@@ -10,13 +10,9 @@
 #define MEF_H_
 
 #include "main.h"
-typedef enum{S0,S1,S2,S3}state;
-void inicio(void);
-void escribiendo(void);
-void derrota(void);
-void victoria(void);
-
-void ActualizarMEF(state* estado);
+typedef enum{ini,number1,number2,number3,numeral,vic,der}state;
+void IniciarMEF(void);
+void ActualizarMEF(void);
 
 
 #endif /* MEF_H_ */

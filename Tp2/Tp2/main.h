@@ -21,5 +21,6 @@
 #include <avr/interrupt.h>
 #include "MEF.h"
 #include "timer.h"
+#include <stdio.h>
 
 #endif /* MAIN_H_ */
