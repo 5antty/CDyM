@@ -144,10 +144,10 @@
     <Compile Include="MEF.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="teclado.c">
+    <Compile Include="teclado.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="teclado.h">
+    <Compile Include="teclado_kit.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timer.c">

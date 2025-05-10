@@ -1,8 +1,17 @@
+/*
+ * Prac2.c
+ *
+ * Created: 21/04/2025 14:23:22
+ * Author : González Villagra, Santiago y Troitiño, Arian
+ */
+
 #ifndef teclado
 #define teclado
-#ifndef _MAIN_H
-	#include "main.h"
-#endif
+//#ifndef _MAIN_H
+	//#include "main.h"
+//#endif
+#include <avr/io.h>
+#include <stdint.h>
 
 #define PORT_KP(Data1)  PORTB = (PORTB & 0b11100110) | ((Data1 & (1 << 7)) >> 3) | ((Data1 & (1 << 6)) >> 3) | ((Data1 & (1 << 5)) >> 5);\
 		PORTD = (PORTD & 0b01000011) |((Data1 & (1 << 4)) << 3) | ((Data1 & (1 << 3))) | ((Data1 & (1 << 2)) << 3) | ((Data1 & (1 << 1)) << 3) | ((Data1 & (1 << 0)) << 2);

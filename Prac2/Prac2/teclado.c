@@ -1,11 +1,10 @@
 /*
- * Prac2.cpp
+ * Prac2.c
  *
  * Created: 21/04/2025 14:23:22
- * Author : santi
+ * Author : González Villagra, Santiago y Troitiño, Arian
  */
 
-#include <avr/io.h>
 #include "teclado.h"
 
 uint8_t KepadUpdate(void)
@@ -15,11 +14,7 @@ uint8_t KepadUpdate(void)
 	for (filas = 0; filas < 4; filas++)
 	{
 		DDR_KP(0x00);
-		//DDR_KP &= ~(0xff);
-		
 		DDR_KP(0x80 >> filas);
-		//LCDstring((uint8_t *)"corrimiento", 11);
-		//PORT_KP(~(0x80 >> c));
 		for (col = 0; col < 4; col++)
 		{
 			if (!((PIN_KP) & (0x08 >> col)))

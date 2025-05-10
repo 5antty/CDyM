@@ -5,6 +5,8 @@
 	#include "main.h"
 #endif
 
+#include <avr/io.h> // Registros del microcontrolador
+#include <avr/pgmspace.h>
 
 //Uncomment this if LCD 4 bit interface is used
 //******************************************
