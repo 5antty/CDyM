@@ -7,7 +7,7 @@
 #include "MEF.h"
 // Estados MEF
 
-typedef enum{ini,number1,number2,number3,numeral,vic,der}state;
+typedef enum{ini,number1,number2,number3,compcar,vic,der}state;
 /*
 ini = Inicio del juego
 number1 = ingreso del primer numero del caracter ASCII
@@ -20,7 +20,7 @@ der = Derrota del jugador
 
 //Declaracion del varaibles globales de la MEF (contra y clocks)
 char *contra;
-static uint8_t clk;//Esta variable es el clk de la MEF, tiene un pulso cada 100ms debido a la interrupcion definida en timer.c
+static uint16_t clk;//Esta variable es el clk de la MEF, tiene un pulso cada 100ms debido a la interrupcion definida en timer.c
 static uint8_t clkS0;
 static uint8_t clkVic;
 static uint8_t clkDer;
@@ -35,6 +35,7 @@ void IniciarMEF(void)
 {
 	LCD_Init();
 	estado = ini;
+	listo=0;
 	cargaRegsTimer();
 }
 
@@ -105,7 +106,6 @@ void derrota(void)
 void victoria(void)
 {
 	//Pantalla de victoria mostrada en el LCD
-	char *msj = "";
 	int min = 0, seg = clk / 10;
 	LCDclr();
 	LCDGotoXY(0, 0);
@@ -115,8 +115,10 @@ void victoria(void)
 		seg = seg % 60;
 	}
 	//Guardo en la variable msj el string de victoria mas la cantidad de tiempo empleado para ganar el juego.
-	sprintf(msj, "VICTORIA %d:%d", min, seg);
-	LCDstring((uint8_t *)msj, 13);
+	LCDstring((uint8_t *)"VICTORIA ", 9);
+	LCDescribeDato(min, 2);
+	LCDsendChar(58);
+	LCDescribeDato(seg, 2);
 }
 
 void ActualizarMEF(void)
@@ -167,12 +169,12 @@ void ActualizarMEF(void)
 		// caracter(&num3); Devuelve si se pulso un caracter numerico
 		if (caracter(&num3))
 		{
-			estado = numeral;
+			estado = compcar;
 		}
 		clk++;
 		break;
 
-	case numeral:
+	case compcar:
 		//Verifico si se presiono una tecla en el teclado, y si esa tecla es el #
 		if ((KEYPAD_Scan(&finCAR) == 1) && (finCAR == 35))
 		{
@@ -221,7 +223,6 @@ void ActualizarMEF(void)
 			LCDclr();
 			estado = ini;
 			listo = 0;
-			clk = 0;
 		}
 		else
 			clk++;
