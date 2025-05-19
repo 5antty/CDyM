@@ -13,7 +13,7 @@ ini = Inicio del juego
 number1 = ingreso del primer numero del caracter ASCII
 number2 = ingreso del segundo numero del caracter ASCII
 number3 = ingreso del tercer numero del caracter ASCII
-numeral = ingreso del numeral para finalizar la lectura del codigo del caracter ASCII	
+compcar = ingreso del numeral para finalizar la lectura del codigo del caracter ASCII y comparo con la contraseña	
 vic = Victoria del jugador
 der = Derrota del jugador
 */
@@ -99,7 +99,7 @@ void derrota(void)
 {
 	//Pantalla de derrota mostrada en el LCD
 	LCDclr();
-	LCDGotoXY(5, 0);
+	LCDGotoXY(4, 0);
 	LCDstring((uint8_t *)"DERROTA", 7);
 }
 
@@ -201,8 +201,8 @@ void ActualizarMEF(void)
 			listo = 1;
 			derrota();
 		}
-		//Luego de haber pasado 30*100ms=3s
-		if ((listo) && (++clkDer == 30))
+		//Luego de haber pasado 50*100ms=5s
+		if ((listo) && (++clkDer == 50))
 		{
 			LCDclr();
 			estado = ini;
