@@ -10,10 +10,10 @@
 
 int main(void)
 {
+	/*
 	LCDinit();
 	LCDGotoXY(0,0);
 	unsigned char d1, d2;
-    /* Replace with your application code */
 	i2c_init();
 	i2c_start();
 	i2c_write(0b11010000);
@@ -34,6 +34,8 @@ int main(void)
 	i2c_stop();
 	LCDsendChar(d1);
 	LCDsendChar(d2);
+	*/
+	uart_sendString("hola berserkers");
     while (1);
 }
 

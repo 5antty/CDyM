@@ -15,6 +15,7 @@
 #include <util/delay.h>
 #include <stdint.h>
 #include "lcd.h"
+#include "UART_LIB.h"
 
 
 #endif /* MAIN_H_ */
