@@ -5,6 +5,7 @@
  *  Author: santi
  */ 
 #include "I2C.h"
+#include "UART_LIB.h"
 
 void i2c_init(void){
 	TWSR=0x00;//Prescaler de bits en 0
@@ -18,14 +19,14 @@ void i2c_start(void){
 	while((TWCR & (1<<TWINT))==0);
 }
 
-void i2c_write(unsigned char data){
+void i2c_write(uint8_t data){
 	TWDR=data;
 	TWCR=(1<<TWINT)|(1<<TWEN);
 	while((TWCR & (1<<TWINT))==0);
 }
 
-unsigned char i2c_read(unsigned char isLast){
-	if(~isLast)
+uint8_t i2c_read(uint8_t isLast){
+	if(isLast==0)
 		TWCR=(1<<TWINT)|(1<<TWEN)|(1<<TWEA);//Envio de ACK
 	else
 		TWCR=(1<<TWINT)|(1<<TWEN);//Envio de NACK
@@ -38,57 +39,56 @@ void i2c_stop(void){
 	//No usar el flag de twint luego de enviar STOP
 }
 
+uint8_t BCDtoInt(uint8_t value)
+{
+	return ((value >> 4) * 10) + (value & 0x0F);
+}
+
+uint8_t InttoBCD(uint8_t value)
+{
+	return ((value / 10) << 4) | (value % 10);
+}
+
 fecha i2c_getTime(){
 	fecha f;
-	unsigned char aux, seg_10, min_10, hr_10;
-	unsigned char dia_10, mes_10, anio_10;
+	uint8_t aux;
 	i2c_start();
 	i2c_write(0b11010000);
 	i2c_write(0x00);
 	i2c_stop();
+	
 	i2c_start();
 	i2c_write(0b11010001);
 	
 	//leo byte 00h donde estan los segs
 	aux=i2c_read(0);
-	seg_10=(aux<<6)|(aux<<5)|(aux<<4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.segs=seg_10*10+aux;
+	f.segs=BCDtoInt(aux);
 	
 	//Lectura de mins 01h
 	aux=i2c_read(0);
-	min_10=(aux<<6)|(aux<<5)|(aux<<4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.min=min_10*10+aux;
+	f.min=BCDtoInt(aux);
 	
 	//Lectura de hora 02h
 	aux=i2c_read(0);
-	hr_10=(aux<<4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.hr=hr_10*10+aux;
+	f.hr=BCDtoInt(aux);
 	
 	//Lectura dia de semana 03h
 	aux=i2c_read(0);
 	
 	//Lectura dia del mes 04h
 	aux=i2c_read(0);
-	dia_10=((aux&((aux<<5)|(aux<<4)))>>4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.dia=dia_10+aux;
+	f.dia=BCDtoInt(aux);
 	
 	//Falta poder ver esto en la estructura fecha
 	
 	//Lectura del mes 05h
 	aux=i2c_read(0);
-	mes_10=(aux<<4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.mes=mes_10*10+aux;
+	f.mes=BCDtoInt(aux);
 	
 	//Lectura del anio 06h
 	aux=i2c_read(1);
-	anio_10=(aux<<7)|(aux<<6)|(aux<<5)|(aux<<4);
-	aux=(aux<<3)|(aux<<2)|(aux<<1)|(aux<<0);
-	f.anio=anio_10*10+aux;
+	f.anio=BCDtoInt(aux);
+	
 	i2c_stop();
 	return f;
 	//Capaz conviene hacer un struct para tener toda esta info y devolverla en la funcion

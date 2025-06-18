@@ -138,6 +138,12 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="timer1.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timer1.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UART_LIB.c">
       <SubType>compile</SubType>
     </Compile>
