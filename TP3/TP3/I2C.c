@@ -5,7 +5,6 @@
  *  Author: santi
  */ 
 #include "I2C.h"
-#include "UART_LIB.h"
 
 void i2c_init(void){
 	TWSR=0x00;//Prescaler de bits en 0
@@ -46,7 +45,7 @@ uint8_t BCDtoInt(uint8_t value)
 
 uint8_t InttoBCD(uint8_t value)
 {
-	return ((value / 10) << 4) | (value % 10);
+	return ((value/10) << 4) | (value % 10);
 }
 
 fecha i2c_getTime(){
@@ -95,35 +94,17 @@ fecha i2c_getTime(){
 }
 
 void i2c_setTime(fecha f){
-	unsigned char aux, aux2;
 	i2c_start();
 	i2c_write(0b11010000);
 	i2c_write(0x00);
 	
-	aux=f.segs%10;//unidades
-	aux2=(f.segs*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
-	
-	aux=f.min%10;
-	aux2=(f.min*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
-	
-	aux=f.hr%10;
-	aux2=(f.hr*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
+	i2c_write(InttoBCD(f.segs));
+	i2c_write(InttoBCD(f.min));
+	i2c_write(InttoBCD(f.hr));
 	i2c_write(0x00);
-	
-	aux=f.dia%10;
-	aux2=(f.dia*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
-	
-	aux=f.mes%10;
-	aux2=(f.mes*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
-	
-	aux=f.anio%10;
-	aux2=(f.anio*0.1);//decenas
-	i2c_write((aux2<<4)|aux);
+	i2c_write(InttoBCD(f.dia));
+	i2c_write(InttoBCD(f.mes));
+	i2c_write(InttoBCD(f.anio));
 	
 	i2c_stop();
 }

@@ -8,9 +8,9 @@
 #include <avr/interrupt.h>
 
 void timer1_Init(){
-	DDRB=(1<<PORTB1);//salida por PORTB1
 	TCCR1A=(1<<COM1A0);
-	TCCR1B=(1<<WGM12)|(1<<CS10);//MODO CTC no prescaler
+	TCCR1B=(1<<WGM12)|(1<<CS12);//MODO CTC prescaler=256
+	OCR1A=31249;
 	TIMSK1=(1<<OCIE1A);
 	sei();
 }

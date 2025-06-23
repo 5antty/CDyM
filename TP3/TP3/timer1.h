@@ -9,6 +9,7 @@
 #ifndef TIMER1_H_
 #define TIMER1_H_
 #include <avr/io.h>
+
 extern volatile uint8_t timer1Flag;
 void timer1_Init();
 
