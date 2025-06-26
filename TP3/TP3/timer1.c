@@ -5,7 +5,6 @@
  *  Author: santi
  */ 
 #include "timer1.h"
-#include <avr/interrupt.h>
 
 void timer1_Init(){
 	TCCR1A=(1<<COM1A0);
@@ -15,6 +14,10 @@ void timer1_Init(){
 	sei();
 }
 ISR(TIMER1_COMPA_vect){
-	//Utilizamos el contador para que el flag se active cada 100ms
-	timer1Flag=1;
+	static uint8_t cont=0;
+	//Flag cada 1 segundo
+	if((cont++)==1){
+		cont=0;
+		timer1Flag=1;
+	}
 }

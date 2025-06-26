@@ -7,22 +7,31 @@
 #include "main.h"
 volatile uint8_t timer1Flag=0;
 volatile uint8_t FlagNewLine=0;
+
 uint8_t FlagON=0;
 uint8_t FlagAlarma=0;
+uint8_t enviando=0;
+uint8_t TXindex=0;
+
+fecha act;
+fecha alarma;
+uint8_t contAlarm=0;
 
 void initAll(){
 	i2c_init();
 	timer1_Init();
 	uart_init();
+
 	uart_TXEnable();
 	uart_sendString("Ingrese la opcion a realizar\r\nON\r\nOFF\r\nSET TIME\r\nSET ALARM\r\n");
 	uart_RXEnable();
 	uart_RXEnI();
 	sei();
 }
-void fechaUART(fecha f){
-	char ok[34];
-	sprintf(ok, "FECHA: %u/%u/%u HORA: %u:%u:%u\r\n", f.dia, f.mes, f.anio, f.hr, f.min, f.segs);
+void fechaUART(){
+	char ok[TXLong];
+	uart_TXEnable();
+	sprintf(ok, "FECHA: %u/%u/%u HORA: %u:%u:%u\r\n", act.dia, act.mes, act.anio, act.hr, act.min, act.segs);
 	uart_sendString(ok);
 }
 
@@ -42,7 +51,7 @@ void modoSetTime(void){
 				f.mes=atoi(BufferRX);
 			break;
 			case 2:
-				f.anio=atoi(BufferRX);
+				f.anio=atoi(BufferRX)%100;
 			break;
 			case 3:
 				f.hr=atoi(BufferRX);
@@ -57,7 +66,7 @@ void modoSetTime(void){
 	}
 	i2c_setTime(f);
 }
-void modoAlarma(fecha* alarma){
+void modoAlarma(){
 	int i;
 	for (i=0;i<3;i++){
 		while(!FlagNewLine){
@@ -66,45 +75,43 @@ void modoAlarma(fecha* alarma){
 		FlagNewLine=0;
 		switch(i){
 			case 0:
-				(*alarma).hr=atoi(BufferRX);
+				alarma.hr=atoi(BufferRX);
 				break;
 			case 1:
-				(*alarma).min=atoi(BufferRX);
+				alarma.min=atoi(BufferRX);
 				break;
 			case 2:
-				(*alarma).segs=atoi(BufferRX);
+				alarma.segs=atoi(BufferRX);
 				break;
 		}
 	}
 }
 
-void gestion(fecha *alarma){
+void gestion(){
 	if((strcmp(BufferRX, "on")==0)||(strcmp(BufferRX, "ON")==0)){
 		FlagON=1;
 	}
 	else if((strcmp(BufferRX, "off")==0)||(strcmp(BufferRX, "OFF")==0)){
 		FlagON=0;
-		uart_sendString("OFF");
+		uart_sendString("Reloj apagado\r\n");
 	}
 	else if((strcmp(BufferRX, "set time")==0)||(strcmp(BufferRX, "SET TIME")==0)){
 		modoSetTime();
 	}
 	else if((strcmp(BufferRX, "set alarm")==0)||(strcmp(BufferRX, "SET ALARM")==0)){
-		modoAlarma(alarma);
-		FlagAlarma=1;
+		modoAlarma();
 	}
 	else
-		uart_sendString("Error de comando");
+		uart_sendString("Error de comando\r\n");
 }
 
-int compAlarma(fecha act, fecha alarma){
+int compAlarma(){
 	return ((act.hr==alarma.hr) && (act.min==alarma.min) && (act.segs==alarma.segs));
 }
 
-void alarmT(uint8_t *contAlarm){
-	(*contAlarm)++;
-	uart_sendString("ALARMA");
-	if((*contAlarm)>4){
+void alarmT(){
+	uart_sendString("ALARMA\r\n");
+	if(++contAlarm>4){
 		FlagAlarma=0;
 		contAlarm=0;
 	}
@@ -112,22 +119,20 @@ void alarmT(uint8_t *contAlarm){
 
 int main(void)
 {
-	fecha alarma, act;
-	uint8_t contAlarm=0;
 	initAll();
 	while(1){
 		if(FlagNewLine){
 			FlagNewLine=0;
-			gestion(&alarma);
+			gestion();
 		}
-		if(FlagON && timer1Flag){
+		if(timer1Flag){
 			timer1Flag=0;
 			act=i2c_getTime();
 			if(FlagAlarma)
-				alarmT(&contAlarm);
-			else
-				fechaUART(act);
-			if(!FlagAlarma && compAlarma(act, alarma)){
+				alarmT();
+			else if(FlagON)
+				fechaUART();//Tarea en background productora
+			if(!FlagAlarma && compAlarma()){
 				FlagAlarma=1;
 			}
 		}

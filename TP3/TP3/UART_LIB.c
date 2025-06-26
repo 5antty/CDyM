@@ -5,56 +5,54 @@
  *  Author: santi
  */ 
 #include "UART_LIB.h"
+#include <avr/interrupt.h>
 extern volatile uint8_t FlagNewLine;
+extern volatile uint8_t FlagOcupado;
 
 void uart_init(){
 	UCSR0C = (1<<UCSZ01)|(1<<UCSZ00);//tamanio del caracter
 	UBRR0L = 103; //baud rate = 9600bps
 }
 void uart_TXEnable(){
-	UCSR0B = (1<<TXEN0);
+	UCSR0B |= (1 << TXEN0);
 }
 void uart_RXEnable(){
-	UCSR0B = (1<<RXEN0);
+	UCSR0B |= (1 << RXEN0);
 }
 void uart_RXEnI(void)
 {
 	UCSR0B |= (1 << RXCIE0);
 }
-void uart_sendCar(uint8_t dato){
-	while (! (UCSR0A & (1<<UDRE0))); //wait until UDR0 is empty
-	UDR0 = dato; //transmite dato
+
+void uart_sendString(char *str)
+{
+	strncpy((char *)BufferTX, str, TamBuffers-1);
+	UDR0=BufferTX[0];
+	UCSR0B |= (1 << TXCIE0);
 }
 
-uint8_t uart_receiveCar(void){
-	unsigned char dato;
-	while (! (UCSR0A & (1<<RXC0))); //wait until new data
-	dato = UDR0;
-	return dato;
-}
-
-void uart_sendString(char* cadena){
-	//int tam = sizeof(cadena)/sizeof(cadena[0]);
-	int i;
-	int tam = 0;
-	while(cadena[tam]!='\0'){
-		tam++;
-	}
-	for (i=0;i<tam;i++){
-		uart_sendCar(cadena[i]);
+ISR(USART_TX_vect)
+{
+	static uint8_t TXindex_lec=1;
+	UDR0=BufferTX[TXindex_lec++];
+	if(BufferTX[TXindex_lec]=='\0'){
+		TXindex_lec=1;
+		UCSR0B &=~(1<<TXCIE0);
 	}
 }
 
-ISR(USART_RX_vect){
+ISR(USART_RX_vect)
+{
 	volatile uint8_t rx_data;
-	static uint8_t index=0;
+	static uint8_t RXindex=0;
 	rx_data=UDR0;
-	if(rx_data!='\r'){
-		BufferRX[index++]=rx_data;
+	if(rx_data != '\r'){
+		BufferRX[RXindex++]=rx_data;
 	}
 	else{
-		BufferRX[index]='\0';
-		index=0;
+		BufferRX[RXindex]='\0';
+		RXindex=0;
 		FlagNewLine=1;
 	}
 }
+

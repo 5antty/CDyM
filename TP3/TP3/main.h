@@ -20,6 +20,10 @@
 #include "I2C.h"
 #include "timer1.h"
 
-char BufferRX[128];
+#define  TamBuffers 128
+#define TXLong 34
+char BufferRX[TamBuffers];
+char BufferTX[TamBuffers];
+
 
 #endif /* MAIN_H_ */
