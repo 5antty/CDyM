@@ -9,7 +9,6 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
@@ -23,7 +22,6 @@
 #define  TamBuffers 128
 #define TXLong 34
 char BufferRX[TamBuffers];
-char BufferTX[TamBuffers];
 
 
 #endif /* MAIN_H_ */

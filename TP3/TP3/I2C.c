@@ -78,8 +78,6 @@ fecha i2c_getTime(){
 	aux=i2c_read(0);
 	f.dia=BCDtoInt(aux);
 	
-	//Falta poder ver esto en la estructura fecha
-	
 	//Lectura del mes 05h
 	aux=i2c_read(0);
 	f.mes=BCDtoInt(aux);
@@ -90,14 +88,13 @@ fecha i2c_getTime(){
 	
 	i2c_stop();
 	return f;
-	//Capaz conviene hacer un struct para tener toda esta info y devolverla en la funcion
 }
 
 void i2c_setTime(fecha f){
 	i2c_start();
 	i2c_write(0b11010000);
 	i2c_write(0x00);
-	
+	//Escribo de corrido los datos del DS3231 desde la posicion de memoria 0x00
 	i2c_write(InttoBCD(f.segs));
 	i2c_write(InttoBCD(f.min));
 	i2c_write(InttoBCD(f.hr));

@@ -9,17 +9,12 @@
 #ifndef UART_LIB_H_
 #define UART_LIB_H_
 #include "main.h"
-#include <avr/io.h>
-
-
 #define  TamBuffers 128
-extern uint8_t enviando;
-extern uint8_t TXindex;
 
 void uart_init();
 void uart_TXEnable();
 void uart_RXEnable();
-void uart_RXEnI(void);
+void uart_RXIEnable();
 void uart_sendString(char* cadena);
 
 

@@ -5,15 +5,15 @@
  * Author : santi
  */ 
 #include "main.h"
+//Flags de interrupciones
 volatile uint8_t timer1Flag=0;
 volatile uint8_t FlagNewLine=0;
-
+//Flags para la arquitectura Background-foreground
 uint8_t FlagON=0;
 uint8_t FlagAlarma=0;
-uint8_t enviando=0;
-uint8_t TXindex=0;
-
+//Refistro para fecha actual
 fecha act;
+//Registro para alarma y contador de la misma
 fecha alarma;
 uint8_t contAlarm=0;
 
@@ -21,11 +21,10 @@ void initAll(){
 	i2c_init();
 	timer1_Init();
 	uart_init();
-
 	uart_TXEnable();
 	uart_sendString("Ingrese la opcion a realizar\r\nON\r\nOFF\r\nSET TIME\r\nSET ALARM\r\n");
 	uart_RXEnable();
-	uart_RXEnI();
+	uart_RXIEnable();
 	sei();
 }
 void fechaUART(){
@@ -89,6 +88,7 @@ void modoAlarma(){
 
 void gestion(){
 	if((strcmp(BufferRX, "on")==0)||(strcmp(BufferRX, "ON")==0)){
+		uart_sendString("Reloj encendido\r\n");
 		FlagON=1;
 	}
 	else if((strcmp(BufferRX, "off")==0)||(strcmp(BufferRX, "OFF")==0)){
@@ -96,9 +96,11 @@ void gestion(){
 		uart_sendString("Reloj apagado\r\n");
 	}
 	else if((strcmp(BufferRX, "set time")==0)||(strcmp(BufferRX, "SET TIME")==0)){
+		uart_sendString("Ingrese\r\ndia\r\nmes\r\nanio\r\nhora\r\nminuto\r\nsegundo\r\n");
 		modoSetTime();
 	}
 	else if((strcmp(BufferRX, "set alarm")==0)||(strcmp(BufferRX, "SET ALARM")==0)){
+		uart_sendString("Ingrese\r\nhora\r\nminuto\r\nsegundo\r\n");
 		modoAlarma();
 	}
 	else

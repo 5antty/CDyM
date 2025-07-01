@@ -13,5 +13,4 @@
 extern volatile uint8_t timer1Flag;
 void timer1_Init();
 
-
 #endif /* TIMER1_H_ */

@@ -5,9 +5,8 @@
  *  Author: santi
  */ 
 #include "UART_LIB.h"
-#include <avr/interrupt.h>
 extern volatile uint8_t FlagNewLine;
-extern volatile uint8_t FlagOcupado;
+char BufferTX[TamBuffers];
 
 void uart_init(){
 	UCSR0C = (1<<UCSZ01)|(1<<UCSZ00);//tamanio del caracter
@@ -19,7 +18,7 @@ void uart_TXEnable(){
 void uart_RXEnable(){
 	UCSR0B |= (1 << RXEN0);
 }
-void uart_RXEnI(void)
+void uart_RXIEnable(void)
 {
 	UCSR0B |= (1 << RXCIE0);
 }
@@ -27,29 +26,29 @@ void uart_RXEnI(void)
 void uart_sendString(char *str)
 {
 	strncpy((char *)BufferTX, str, TamBuffers-1);
-	UDR0=BufferTX[0];
-	UCSR0B |= (1 << TXCIE0);
+	UCSR0B |= (1 << UDRIE0);
 }
 
-ISR(USART_TX_vect)
+ISR(USART_UDRE_vect)
 {
-	static uint8_t TXindex_lec=1;
-	UDR0=BufferTX[TXindex_lec++];
+	static uint8_t TXindex_lec=0;
+	UDR0=BufferTX[TXindex_lec];
+	TXindex_lec++;
 	if(BufferTX[TXindex_lec]=='\0'){
-		TXindex_lec=1;
-		UCSR0B &=~(1<<TXCIE0);
+		TXindex_lec=0;
+		UCSR0B &=~(1<<UDRIE0);
 	}
 }
 
 ISR(USART_RX_vect)
 {
-	volatile uint8_t rx_data;
+	volatile uint8_t RXData;
 	static uint8_t RXindex=0;
-	rx_data=UDR0;
-	if(rx_data != '\r'){
-		BufferRX[RXindex++]=rx_data;
+	RXData=UDR0;
+	if((RXData != '\r') && (RXData != '\n')){
+		BufferRX[RXindex++]=RXData;
 	}
-	else{
+	else if(RXData == '\r'){
 		BufferRX[RXindex]='\0';
 		RXindex=0;
 		FlagNewLine=1;
