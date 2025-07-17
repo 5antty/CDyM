@@ -12,7 +12,7 @@
 
 void PWM_T1();
 void PWM_soft(uint8_t);
-void PWM_T1_update(uint8_t o1a, uint8_t o1b);
+void PWM_T1_update(uint8_t, uint8_t);
 void PWM_init();
 
 

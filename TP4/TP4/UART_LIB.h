@@ -9,13 +9,12 @@
 #ifndef UART_LIB_H_
 #define UART_LIB_H_
 #include "main.h"
-#define  TamBuffers 128
-
+#include <string.h>
 void uart_init();
 void uart_TXEnable();
 void uart_RXEnable();
 void uart_RXIEnable();
-void uart_sendCar(uint8_t);
+void uart_sendString(char *);
 
 
 #endif /* UART_LIB_H_ */

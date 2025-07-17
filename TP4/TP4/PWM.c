@@ -11,17 +11,18 @@
 uint8_t PWM_PERIOD=255;
 
 //OC1A CONTROLA EL AZUL (OSCURO)
-//OC1A CONTROLA EL VERDE (OSCURO)
+//OC1B CONTROLA EL VERDE (OSCURO)
 void PWM_T1(){
-	TCCR1A=(1<<WGM10)|(1<<COM1A1)|(1<<COM1A0)|(1<<COM1B0)|(1<<COM1B1);//Modo 5 invertido ya que los leds se activan en bajo
+	//TCCR1A=(1<<WGM10)|(1<<COM1A1)|(1<<COM1A0)|(1<<COM1B0)|(1<<COM1B1);//Modo 5 invertido ya que los leds se activan en bajo
+	TCCR1A=(1<<WGM10)|(1<<COM1A1)|(1<<COM1B1); //Modo 5 no invertido ya que los leds se activan en bajo
 	TCCR1B=(1<<WGM12)|(1<<CS12)|(1<<CS10);
 	OCR1A=0;
-	OCR1B=255;
+	OCR1B=0;
 }
 
-void PWM_T1_update(uint8_t o1a, uint8_t o1b){
-	OCR1A=o1a;
-	OCR1B=o1b;
+void PWM_T1_update(uint8_t o1b, uint8_t o1a){
+	OCR1B=o1b;//Actualizo el verde
+	OCR1A=o1a;//Actualizo el azul
 }
 
 //CONTROLA EL ROJO
@@ -29,7 +30,7 @@ void PWM_soft(uint8_t PWM_DELTA){
 	static uint16_t PWM_position=0;
 	if(++PWM_position>=PWM_PERIOD)
 		PWM_position=0;
-	if(PWM_position<PWM_DELTA)
+	if(PWM_position>PWM_DELTA)
 		PWM_OFF;
 	else
 		PWM_ON;

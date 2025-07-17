@@ -5,7 +5,7 @@
  *  Author: santi
  */ 
 #include "UART_LIB.h"
-//extern volatile uint8_t FlagNewLine;
+extern volatile uint8_t FlagUART;
 char BufferTX[TamBuffers];
 char BufferRX[TamBuffers];
 
@@ -23,8 +23,10 @@ void uart_RXIEnable(void)
 {
 	UCSR0B |= (1 << RXCIE0);
 }
-void uart_sendCar(uint8_t dato){
-	UDR0=dato;
+void uart_sendString(char *str)
+{
+	strncpy((char *)BufferTX, str, TamBuffers-1);
+	UCSR0B |= (1 << UDRIE0);
 }
 
 ISR(USART_UDRE_vect)
@@ -49,7 +51,7 @@ ISR(USART_RX_vect)
 	else if(RXData == '\r'){
 		BufferRX[RXindex]='\0';
 		RXindex=0;
-		//FlagNewLine=1;
+		FlagUART=1;
 	}
 }
 
