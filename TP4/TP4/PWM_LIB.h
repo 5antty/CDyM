@@ -2,7 +2,7 @@
  * PWM.h
  *
  * Created: 07/07/2025 14:35:48
- *  Author: santi
+ *  Author: González Villagra, Santiago
  */ 
 
 

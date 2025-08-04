@@ -2,12 +2,12 @@
  * UART_LIB.c
  *
  * Created: 6/8/2025 12:35:50 AM
- *  Author: santi
+ *  Author: González Villagra, Santiago
  */ 
 #include "UART_LIB.h"
 extern volatile uint8_t FlagUART;
 char BufferTX[TamBuffers];
-char BufferRX[TamBuffers];
+extern char BufferRX[TamBuffers];
 
 void uart_init(){
 	UCSR0C = (1<<UCSZ01)|(1<<UCSZ00);//tamanio del caracter

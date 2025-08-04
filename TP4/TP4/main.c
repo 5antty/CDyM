@@ -2,23 +2,25 @@
  * TP4.c
  *
  * Created: 07/07/2025 14:24:50
- * Author : santi
+ * Author : González Villagra, Santiago
  */ 
 
 #include "main.h"
-#define  F_CPU 16000000UL 
-#include <util/delay.h>
-
+char BufferRX[TamBuffers];
+//Flags ADC y UART0
 uint8_t FlagADC=0;
 uint8_t FlagUART=0;
+
+//Medida del ADC
+uint8_t result=0;
+
+//Variables para los colores y color de software
 uint8_t R=255;
 uint8_t G=255;
 uint8_t B=255;
-
-char BufferRX[TamBuffers];
-uint8_t result=0;
 uint8_t colorSoft=0;
 
+//Funcion que retorna el brillo del codigo del color, en base al valor del ADC
 uint8_t brillo(uint8_t ccolor, uint8_t adcv)
 {
 	return 255 - ((255 - ccolor) * adcv) / 255;
@@ -68,9 +70,13 @@ void colores(){
 			G=255;
 			B=255;
 		break;
+		default:
+			uart_sendString("Comando erroneo\r\n");
+		break;
 	}
 }
 
+//Inicializo todos los perifericos a utilizar
 void initALL(){
 	uart_init();
 	uart_TXEnable();
@@ -79,26 +85,28 @@ void initALL(){
 	uart_RXIEnable();
 	PWM_init();
 	adc_init();
+	adc_start();
 	sei();
-	DDRB=0xff;
+	DDRB=0xff; //Todo PORTB como salida
 }
 
 int main(void)
 {
-	
 	initALL();
-    /* Replace with your application code */
     while (1) 
     {
+		//Si se levanta el flag de la uart, actualizo los colores del LED
 		if(FlagUART){
 			FlagUART=0;
 			colores();
 		}
-		adc_start();
-		while(!FlagADC);
-		FlagADC=0;
-		colorSoft=brillo(R, result);
-		PWM_T1_update(brillo(G, result), brillo(B, result));
+		//Se recibio una lectura nueva del ADC, entonces modifico el brillo del LED
+		if(FlagADC){
+			FlagADC=0;
+			colorSoft=brillo(R, result);
+			PWM_T1_update(brillo(G, result), brillo(B, result));
+			adc_start();
+		}
     }
 	return 0;
 }

@@ -2,18 +2,20 @@
  * PWM.c
  *
  * Created: 07/07/2025 14:35:33
- *  Author: santi
+ *  Author: González Villagra, Santiago
  */ 
 #include "PWM_LIB.h"
+
+//Macros para la PWM por software
 #define PWM_ON PORTB|=(1<<PORTB5)
 #define PWM_OFF PORTB&=~(1<<PORTB5)
 
+//Periodo de la pwm por software
 uint8_t PWM_PERIOD=255;
 
 //OC1A CONTROLA EL AZUL (OSCURO)
 //OC1B CONTROLA EL VERDE (OSCURO)
 void PWM_T1(){
-	//TCCR1A=(1<<WGM10)|(1<<COM1A1)|(1<<COM1A0)|(1<<COM1B0)|(1<<COM1B1);//Modo 5 invertido ya que los leds se activan en bajo
 	TCCR1A=(1<<WGM10)|(1<<COM1A1)|(1<<COM1B1); //Modo 5 no invertido ya que los leds se activan en bajo
 	TCCR1B=(1<<WGM12)|(1<<CS12)|(1<<CS10);
 	OCR1A=0;

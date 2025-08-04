@@ -2,7 +2,7 @@
  * UART_LIB.h
  *
  * Created: 6/8/2025 12:36:06 AM
- *  Author: santi
+ *  Author: González Villagra, Santiago
  */ 
 
 
